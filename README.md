@@ -9,11 +9,11 @@
 ## 💻 단순한 MMO 2D 게임
  캐릭터를 방향키로 움직이고 A. S. D키를 눌러 적 캐릭터를 물리치는 게임
 
-  ![capture](https://github.com/kbm0996/Network-Programming-AsyncselectModel-WINAPI_2DGame/blob/master/figure.jpge)
+  ![capture](https://github.com/kbm0996/Network-Programming-AsyncselectModel-WINAPI_2DGame/blob/master/figure.jpg)
   
   **figure 1. Game Screenshot*
   
-    ![capture](https://github.com/kbm0996/Network-Programming-AsyncselectModel-WINAPI_2DGame/blob/master/figure.jpge)
+  ![capture](https://github.com/kbm0996/Network-Programming-AsyncselectModel-WINAPI_2DGame/blob/master/serverlogfigure(feat.dummy).jpg)
   
   **figure 2. Server Log Screenshot(feat.Dummy)*
 
