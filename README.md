@@ -15,7 +15,7 @@
   
   ![capture](https://github.com/kbm0996/Network-Programming-AsyncselectModel-WINAPI_2DGame/blob/master/dummy&server.jpg)
   
-  **figure 2. Server Log & Dummy Program*
+  **figure 2. Server Log(Right) & Dummy Program(Left)*
 
   
 ## 📑 구성
