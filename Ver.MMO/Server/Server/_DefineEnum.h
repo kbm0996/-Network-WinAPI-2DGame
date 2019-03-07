@@ -1,25 +1,24 @@
 #ifndef __SPRITE_DEFINE__
 #define __SPRITE_DEFINE__
-
-#define dfMAX_USER 30
-
 //-----------------------------------------------------------------
 // System Value
 //-----------------------------------------------------------------
-#define dfSCREEN_WIDTH		640
-#define dfSCREEN_HEIGHT	480
-#define dfSCREEN_BIT		32
+#define dfSCREEN_WIDTH	640
+#define dfSCREEN_HEIGHT 480
+#define dfSCREEN_BIT	32
 
 
 //-----------------------------------------------------------------
 // Animation Frame Delay
 //-----------------------------------------------------------------
-#define dfDELAY_STAND		5
-#define dfDELAY_MOVE		4
+#define dfDELAY_STAND	5
+#define dfDELAY_MOVE	4
 #define dfDELAY_ATTACK1	3
 #define dfDELAY_ATTACK2	4
 #define dfDELAY_ATTACK3	4
-#define dfDELAY_EFFECT		3
+#define dfDELAY_EFFECT	3
+
+#define dfFRAME_MAX		25
 
 /*---------------------------------------------------------------
 
@@ -175,8 +174,8 @@ enum e_OBJECT_TYPE
 //-----------------------------------------------------------------
 // Character Speed
 //-----------------------------------------------------------------
-#define dfSPEED_PLAYER_X	3
-#define dfSPEED_PLAYER_Y	2
+#define dfSPEED_PLAYER_X	3 * 2
+#define dfSPEED_PLAYER_Y	2 * 2
 
 //-----------------------------------------------------------------
 // Character Direction
@@ -190,9 +189,27 @@ enum e_OBJECT_TYPE
 //-----------------------------------------------------------------
 // Screen Move Range
 //-----------------------------------------------------------------
-#define dfRANGE_MOVE_TOP		50
-#define dfRANGE_MOVE_LEFT		10
-#define dfRANGE_MOVE_RIGHT		630
-#define dfRANGE_MOVE_BOTTOM	470
+#define dfRANGE_MOVE_TOP	0
+#define dfRANGE_MOVE_LEFT	0
+#define dfRANGE_MOVE_RIGHT	6400
+#define dfRANGE_MOVE_BOTTOM	6400
+
+
+//-----------------------------------------------------------------
+// Sector
+//-----------------------------------------------------------------
+#define dfSECTOR_PIXEL_WIDTH		640	//160//320//640
+#define dfSECTOR_PIXEL_HEIGHT		400	//100//200//400
+#define dfERROR_RANGE				100	//100/200
+#define dfSECTOR_MAX_X				(dfRANGE_MOVE_RIGHT / dfSECTOR_PIXEL_WIDTH + 1)
+#define dfSECTOR_MAX_Y				(dfRANGE_MOVE_BOTTOM / dfSECTOR_PIXEL_HEIGHT + 1)
+
+
+//-----------------------------------------------------------------
+// Dead Reckoning
+//-----------------------------------------------------------------
+#define dfRECKONING_SPEED_PLAYER_X	3
+#define dfRECKONING_SPEED_PLAYER_Y	2
+
 
 #endif

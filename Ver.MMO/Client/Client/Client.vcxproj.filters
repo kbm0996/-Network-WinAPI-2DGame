@@ -1,0 +1,349 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="소스 파일">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="헤더 파일">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="리소스 파일">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="리소스 파일\Data">
+      <UniqueIdentifier>{0073d7b0-f34d-4edc-af39-bb2b0adc3719}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\CBuffer">
+      <UniqueIdentifier>{d56b8d6f-649f-440f-a4f8-710e034fa4b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\CObject">
+      <UniqueIdentifier>{e488c824-0b47-4448-9f3a-ee01d832df41}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Network">
+      <UniqueIdentifier>{cd152bec-4b25-4de7-8374-498f6f15ee20}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Render">
+      <UniqueIdentifier>{bf89c280-2c93-4fa1-a785-34704306eb41}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\KeyProcess">
+      <UniqueIdentifier>{0ea8448b-f88a-42dc-9728-162186b1e62c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\CTileMap">
+      <UniqueIdentifier>{b577469d-65d4-4032-915c-9ac5b046a6dc}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+    <Text Include="이동범위.txt">
+      <Filter>리소스 파일</Filter>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stdafx.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Client.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="CScreenDib.h">
+      <Filter>소스 파일\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="CSpriteDib.h">
+      <Filter>소스 파일\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="CFrameSkip.h">
+      <Filter>소스 파일\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="NetworkProc.h">
+      <Filter>소스 파일\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="CBaseObject.h">
+      <Filter>소스 파일\CObject</Filter>
+    </ClInclude>
+    <ClInclude Include="CEffect.h">
+      <Filter>소스 파일\CObject</Filter>
+    </ClInclude>
+    <ClInclude Include="CPlayer.h">
+      <Filter>소스 파일\CObject</Filter>
+    </ClInclude>
+    <ClInclude Include="CLinkedlist.h">
+      <Filter>소스 파일\CBuffer</Filter>
+    </ClInclude>
+    <ClInclude Include="CRingBuffer.h">
+      <Filter>소스 파일\CBuffer</Filter>
+    </ClInclude>
+    <ClInclude Include="CSerialBuffer.h">
+      <Filter>소스 파일\CBuffer</Filter>
+    </ClInclude>
+    <ClInclude Include="_Protocol.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="_DefineEnum.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="KeyProcess.h">
+      <Filter>소스 파일\KeyProcess</Filter>
+    </ClInclude>
+    <ClInclude Include="CTileMap.h">
+      <Filter>소스 파일\CTileMap</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Client.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="CSpriteDib.cpp">
+      <Filter>소스 파일\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="CFrameSkip.cpp">
+      <Filter>소스 파일\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="CScreenDib.cpp">
+      <Filter>소스 파일\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="NetworkProc.cpp">
+      <Filter>소스 파일\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="CPlayer.cpp">
+      <Filter>소스 파일\CObject</Filter>
+    </ClCompile>
+    <ClCompile Include="CBaseObject.cpp">
+      <Filter>소스 파일\CObject</Filter>
+    </ClCompile>
+    <ClCompile Include="CRingBuffer.cpp">
+      <Filter>소스 파일\CBuffer</Filter>
+    </ClCompile>
+    <ClCompile Include="CSerialBuffer.cpp">
+      <Filter>소스 파일\CBuffer</Filter>
+    </ClCompile>
+    <ClCompile Include="KeyProcess.cpp">
+      <Filter>소스 파일\KeyProcess</Filter>
+    </ClCompile>
+    <ClCompile Include="CTileMap.cpp">
+      <Filter>소스 파일\CTileMap</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Client.rc">
+      <Filter>리소스 파일</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="small.ico">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="Client.ico">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="Data\Stand_L_01.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\Stand_L_02.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\Stand_L_03.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\Stand_R_01.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\Stand_R_02.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\Stand_R_03.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\Tile_01.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\xSpark_1.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\xSpark_2.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\xSpark_3.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\xSpark_4.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\_Map.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\Attack1_L_01.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\Attack1_L_02.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\Attack1_L_03.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\Attack1_L_04.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\Attack1_R_01.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\Attack1_R_02.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\Attack1_R_03.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\Attack1_R_04.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\Attack2_L_01.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\Attack2_L_02.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\Attack2_L_03.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\Attack2_L_04.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\Attack2_R_01.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\Attack2_R_02.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\Attack2_R_03.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\Attack2_R_04.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\Attack3_L_01.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\Attack3_L_02.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\Attack3_L_03.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\Attack3_L_04.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\Attack3_L_05.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\Attack3_L_06.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\Attack3_R_01.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\Attack3_R_02.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\Attack3_R_03.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\Attack3_R_04.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\Attack3_R_05.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\Attack3_R_06.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\HPGuage.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\Move_L_01.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\Move_L_02.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\Move_L_03.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\Move_L_04.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\Move_L_05.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\Move_L_06.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\Move_L_07.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\Move_L_08.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\Move_L_09.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\Move_L_10.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\Move_L_11.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\Move_L_12.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\Move_R_01.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\Move_R_02.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\Move_R_03.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\Move_R_04.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\Move_R_05.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\Move_R_06.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\Move_R_07.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\Move_R_08.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\Move_R_09.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\Move_R_10.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\Move_R_11.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\Move_R_12.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+    <Image Include="Data\Shadow.bmp">
+      <Filter>리소스 파일\Data</Filter>
+    </Image>
+  </ItemGroup>
+</Project>

@@ -36,10 +36,7 @@
 
 #include "_DefineEnum.h"
 #include "_Protocol.h"
-#include "NetworkProc.h"
 
-#define dfSERVER_PORT 5000
-#define UM_NETWORK (WM_USER+1)
 #define TITLE 0
 #define GAME 1
 
@@ -51,11 +48,23 @@
 #include "CLinkedlist.h"
 
 ////////////////////////////////////////
+// Network
+////////////////////////////////////////
+#define dfSERVER_PORT 20000
+#define UM_NETWORK (WM_USER+1)
+#include "NetworkProc.h"
+
+////////////////////////////////////////
 // Rendering
 ////////////////////////////////////////
 #include "CScreenDib.h"
 #include "CSpriteDib.h"
 #include "CFrameSkip.h"
+
+////////////////////////////////////////
+// TileMap
+////////////////////////////////////////
+#include "CTileMap.h"
 
 ////////////////////////////////////////
 // Object
@@ -66,5 +75,7 @@
 #include "KeyProcess.h"
 
 
+
 extern HWND g_hWnd;
-extern ObjectList<CBaseObject*> g_lst;
+extern CLinkedlist<CBaseObject*> g_lst;
+extern CPlayer* g_pMyPlayer;

@@ -31,7 +31,7 @@ int NetworkInit(WCHAR * szIP)
 
 	SOCKADDR_IN serveraddr;
 	serveraddr.sin_family = AF_INET;
-	serveraddr.sin_port = htons(df_SERVER_PORT);
+	serveraddr.sin_port = htons(dfSERVER_PORT);
 	InetPton(AF_INET, szIP, &serveraddr.sin_addr);
 
 	if (WSAAsyncSelect(g_Socket, g_hWnd, UM_NETWORK, FD_CONNECT | FD_READ | FD_WRITE | FD_CLOSE) == SOCKET_ERROR)

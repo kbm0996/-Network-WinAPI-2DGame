@@ -1,7 +1,6 @@
 #ifndef __SPRITE_DEFINE__
 #define __SPRITE_DEFINE__
 
-#define dfMAX_USER 30
 
 //-----------------------------------------------------------------
 // System Value
@@ -190,9 +189,20 @@ enum e_OBJECT_TYPE
 //-----------------------------------------------------------------
 // Screen Move Range
 //-----------------------------------------------------------------
-#define dfRANGE_MOVE_TOP		50
-#define dfRANGE_MOVE_LEFT		10
-#define dfRANGE_MOVE_RIGHT		630
-#define dfRANGE_MOVE_BOTTOM	470
+#define dfMAP_DEFAULT_SIZE		6400
+#define dfMAP_DEFAULT_WIDTH	6400
+#define dfMAP_DEFAULT_HEIGHT	6400
+
+#define dfRANGE_MOVE_TOP		0
+#define dfRANGE_MOVE_LEFT		0
+#define dfRANGE_MOVE_RIGHT		6400
+#define dfRANGE_MOVE_BOTTOM	6400
+
+//-----------------------------------------------------------------
+// Tile Size
+//-----------------------------------------------------------------
+#define dfTILE_SIZE		64
+#define dfTILE_DRAWVERT	9
+#define dfTILE_DRAWHORZ	11
 
 #endif

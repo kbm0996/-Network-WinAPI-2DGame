@@ -10,14 +10,29 @@
 HWND g_hWnd;
 HINSTANCE g_hInst;                              // 현재 인스턴스입니다.
 HIMC g_hOldIMC;
+
+////////////////////////////////////////////////////////////////////////////////
+// Windows Info
+//
+////////////////////////////////////////////////////////////////////////////////
 WCHAR g_szIP[INET_ADDRSTRLEN];
 WCHAR szTitle[MAX_LOADSTRING];                  // 제목 표시줄 텍스트입니다.
 WCHAR szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 이름입니다.
-
-ObjectList<CBaseObject*> g_lst;
-int g_iState = 1;
-bool g_bConnect;
 bool g_bActiveApp;
+
+////////////////////////////////////////////////////////////////////////////////
+// Update() State
+//
+////////////////////////////////////////////////////////////////////////////////
+int g_iState = GAME;
+CLinkedlist<CBaseObject*> g_lst;
+CPlayer* g_pMyPlayer;
+
+////////////////////////////////////////////////////////////////////////////////
+// Frame Skip
+//
+////////////////////////////////////////////////////////////////////////////////
+CFrameSkip g_FrameSkip(50);
 
 // 이 코드 모듈에 들어 있는 함수의 정방향 선언입니다.
 void InitialGame(void);
@@ -43,9 +58,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     // TODO: 여기에 코드를 입력합니다.
 	timeBeginPeriod(1);
-	DialogBox(hInstance, MAKEINTRESOURCE(IDD_IPADDR), NULL, (DLGPROC)DialogProc);
 
-	InitialGame();
+	////////////////////////////////////////////////////////////////////////////////
+	// Server IP Input Dialog
+	//
+	////////////////////////////////////////////////////////////////////////////////
+	DialogBox(hInstance, MAKEINTRESOURCE(IDD_IPADDRESS), NULL, (DLGPROC)DialogProc);
 
     // 전역 문자열을 초기화합니다.
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
@@ -58,11 +76,28 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         return FALSE;
     }
 
-    HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_CLIENT));
+	////////////////////////////////////////////////////////////////////////////////
+	// Game & Network Initialization
+	//
+	////////////////////////////////////////////////////////////////////////////////
+	InitialGame();
+	if (NetworkInit(g_szIP) != 0)
+		return FALSE;
+
+   
 
     MSG msg;
 
-    // 기본 메시지 루프입니다.
+	/////////////////////////////////////////////////////////////////////////////////
+	// Message Loop
+	//
+	/////////////////////////////////////////////////////////////////////////////////
+	/* TODO : GetMessage() 함수
+	 메세지큐에 메세지가 없으면 그대로 반환 값을 반환하지 않고 대기 상태로 있는다. 
+	메세지가 생기면 해당 메세지를 추출하고 반환 값으로 1을 리턴한다. 
+	WM_QUIT 메세지가 발생했을때는 0을 리턴한다.
+	*/
+	//HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_CLIENT));
     //while (GetMessage(&msg, nullptr, 0, 0))
     //{
     //    if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
@@ -71,10 +106,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     //        DispatchMessage(&msg);
     //    }
     //}
+
+	/* TODO : PeekMessage() 함수
+	 루프마다 함수가 실행되면 메세지 큐를 검사하고 항상 반환 값으로 1을 반환 한다. 
+	즉, 대기상태가 없다. 매개변수로 주어진 MSG구조체에 메세지 정보를 저장해 준다.
+	*/
 	while (1)
 	{
 		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 		{
+			// 들어온 메세지가 있는 경우, 메세지 처리
 			if (msg.message == WM_QUIT)
 				break;
 			TranslateMessage(&msg);
@@ -88,6 +129,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	Network_Close();
 	timeEndPeriod(1);
+
     return (int) msg.wParam;
 }
 
@@ -96,6 +138,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 void InitialGame(void)
 {
 	g_cSprite.LoadDibSprite(eMAP, L"Data\\_Map.bmp", 0, 0);
+	g_cSprite.LoadDibSprite(eMAP_TILE, L"Data\\Tile_01.bmp", 0, 0);
 
 	g_cSprite.LoadDibSprite(ePLAYER_STAND_L01, L"Data\\Stand_L_01.bmp", 71, 90);
 	g_cSprite.LoadDibSprite(ePLAYER_STAND_L02, L"Data\\Stand_L_02.bmp", 71, 90);
@@ -176,8 +219,6 @@ void InitialGame(void)
 
 	g_cSprite.LoadDibSprite(eGUAGE_HP, L"Data\\HPGuage.bmp", 0, 0);
 	g_cSprite.LoadDibSprite(eSHADOW, L"Data\\Shadow.bmp", 32, 4);
-
-	g_Frame = new CFrameSkip();
 }
 
 void Update(void)
@@ -197,12 +238,15 @@ void Update_Title(void)
 {
 }
 
+//Select 모델을 사용하는 경우, Update 부분에 select 함수 호출 및 네트워크 검사가 들어가지만
+//AsyncSelect 모델을 사용하기 때문에 Update 함수를 수정할 필요가 없음
 void Update_Game(void)
 {
-	if (g_bActiveApp)	KeyProcess();
+	if (g_bActiveApp)
+		KeyProcess(g_pMyPlayer);
 
 	Action();
-	if (!g_Frame->FrameSkip(g_hWnd))
+	if (!g_FrameSkip.FrameSkip(g_hWnd))
 		Draw();
 
 	g_cScreenDib.DrawBuffer(g_hWnd);
@@ -210,19 +254,16 @@ void Update_Game(void)
 
 void Action(void)
 {
-	ObjectList<CBaseObject*>::iterator Object_iter;
-	ObjectList<CBaseObject*>::iterator Object_Inneriter;
-	ObjectList<CBaseObject*>::Node* pNode;
+	CLinkedlist<CBaseObject*>::Node* pNode;
 	CBaseObject* pTempData;
-
-	for (Object_iter = g_lst.begin(); Object_iter != g_lst.end(); ++Object_iter)
+	for (auto Object_iter = g_lst.begin(); Object_iter != g_lst.end(); ++Object_iter)
 	{
 		(*Object_iter)->Action();
 	}
 
-	for (Object_iter = g_lst.begin(); Object_iter != g_lst.end(); ++Object_iter)
+	for (auto Object_iter = g_lst.begin(); Object_iter != g_lst.end(); ++Object_iter)
 	{
-		for (Object_Inneriter = g_lst.begin(); Object_Inneriter != g_lst.end(); ++Object_Inneriter)
+		for (auto Object_Inneriter = g_lst.begin(); Object_Inneriter != g_lst.end(); ++Object_Inneriter)
 		{
 			if ((*Object_iter)->GetObjectType() != eTYPE_EFFECT)					// 이펙트는 뒤로 밀고
 				if ((*Object_iter)->GetCurY() < (*Object_Inneriter)->GetCurY())		// Y좌표를 기준으로 정렬
@@ -234,7 +275,7 @@ void Action(void)
 		}
 	}
 
-	for (Object_iter = g_lst.begin(); Object_iter != g_lst.end(); ++Object_iter)		// 이펙트 지우기
+	for (auto Object_iter = g_lst.begin(); Object_iter != g_lst.end(); ++Object_iter)		// 이펙트 지우기
 	{
 		if ((*Object_iter)->GetObjectType() == eTYPE_EFFECT)
 		{
@@ -251,14 +292,28 @@ void Action(void)
 
 void Draw(void)
 {
-	ObjectList<CBaseObject*>::iterator Object_iter;
+	CLinkedlist<CBaseObject*>::iterator Object_iter;
 
 	BYTE *bypDest = g_cScreenDib.GetDibBuffer();
 	int iDestWidth = g_cScreenDib.GetWidth();
 	int iDestHeight = g_cScreenDib.GetHeight();
 	int iDestPitch = g_cScreenDib.GetPitch();
+	int iMapX, iMapY;
 
-	g_cSprite.DrawImage(eMAP, 0, 0, bypDest, iDestWidth, iDestHeight, iDestPitch);
+	//g_cSprite.DrawImage(eMAP, 0, 0, bypDest, iDestWidth, iDestHeight, iDestPitch);
+
+	if (NULL == g_pMyPlayer)
+	{
+		iMapX = iMapY = 0;
+	}
+	else
+	{
+		iMapX = g_pMyPlayer->GetCurX();
+		iMapY = g_pMyPlayer->GetCurY();
+		g_TileMap.SetScrollPos(iMapX - dfSCREEN_WIDTH / 2, iMapY - dfSCREEN_HEIGHT / 2 - 50);// +50);
+	}
+
+	g_TileMap.DrawTile(bypDest, iDestWidth, iDestHeight, iDestPitch);
 
 	for (Object_iter = g_lst.begin(); Object_iter != g_lst.end(); ++Object_iter)
 	{
@@ -304,7 +359,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 //
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
-	g_hInst = hInstance; // 인스턴스 핸들을 전역 변수에 저장합니다.
+   g_hInst = hInstance; // 인스턴스 핸들을 전역 변수에 저장합니다.
 
    g_hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
       CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
@@ -316,13 +371,18 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
    ShowWindow(g_hWnd, nCmdShow);
    UpdateWindow(g_hWnd);
-   SetFocus(g_hWnd);
 
+   ////////////////////////////////////////////////////////////////////////////////
+   // Window Size Optimization
+   //
+   ////////////////////////////////////////////////////////////////////////////////
+   SetFocus(g_hWnd);
    RECT WindowRect;
    WindowRect.top = 0;
    WindowRect.left = 0;
    WindowRect.right = 640;
    WindowRect.bottom = 480;
+
    AdjustWindowRectEx(&WindowRect, GetWindowStyle(g_hWnd), GetMenu(g_hWnd) != NULL, GetWindowExStyle(g_hWnd));
 
    int iX = (GetSystemMetrics(SM_CXSCREEN) / 2) - (640 / 2);
@@ -330,15 +390,12 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
    MoveWindow(g_hWnd, iX, iY, WindowRect.right - WindowRect.left, WindowRect.bottom - WindowRect.top, TRUE);
 
-   NetworkInit(g_szIP);
-
    return TRUE;
 }
 
 BOOL CALLBACK DialogProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
 	HWND	hIPCon;
-
 	switch (iMsg)
 	{
 	case WM_INITDIALOG:
@@ -374,55 +431,54 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 //
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+	PAINTSTRUCT ps;
+	HDC hdc;
     switch (message)
     {
-    case WM_COMMAND:
-        {
-            int wmId = LOWORD(wParam);
-            // 메뉴 선택을 구문 분석합니다.
-            switch (wmId)
-            {
-            case IDM_ABOUT:
-                DialogBox(g_hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
-                break;
-            case IDM_EXIT:
-                DestroyWindow(hWnd);
-                break;
-            default:
-                return DefWindowProc(hWnd, message, wParam, lParam);
-            }
-        }
-        break;
+    //case WM_COMMAND:
+    //    {
+    //        int wmId = LOWORD(wParam);
+    //        // 메뉴 선택을 구문 분석합니다.
+    //        switch (wmId)
+    //        {
+    //        case IDM_ABOUT:
+    //            DialogBox(g_hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
+    //            break;
+    //        case IDM_EXIT:
+    //            DestroyWindow(hWnd);
+    //            break;
+    //        default:
+    //            return DefWindowProc(hWnd, message, wParam, lParam);
+    //        }
+    //    }
+    //    break;
 	case WM_CREATE:
 		g_hOldIMC = ImmAssociateContext(hWnd, NULL);
 		break;
 	case UM_NETWORK:
 		if (!NetworkProc(wParam, lParam))
 		{
-			MessageBox(hWnd, L"접속이 종료되었습니다.", L"끊겼지롱", MB_OK);
+			MessageBox(hWnd, L"접속이 종료되었습니다.", L"끊겼", MB_OK);
 			// 프로그램 종료
 			ImmAssociateContext(hWnd, g_hOldIMC);
 			PostQuitMessage(0);
 		}
 		break;
 	case WM_ACTIVATEAPP:
-		g_bActiveApp = (bool)wParam;
+		g_bActiveApp = (BOOL)wParam;
 		break;
-    case WM_PAINT:
-        {
-            PAINTSTRUCT ps;
-            HDC hdc = BeginPaint(hWnd, &ps);
-            // TODO: 여기에 hdc를 사용하는 그리기 코드를 추가합니다.
-            EndPaint(hWnd, &ps);
-        }
-        break;
-    case WM_DESTROY:
+	case WM_PAINT:
+		hdc = BeginPaint(hWnd, &ps);
+		EndPaint(hWnd, &ps);
+		break;
+	case WM_DESTROY:
 		ImmAssociateContext(hWnd, g_hOldIMC);
-        PostQuitMessage(0);
-        break;
-    default:
-        return DefWindowProc(hWnd, message, wParam, lParam);
-    }
+		PostQuitMessage(0);
+		break;
+	default:
+		return DefWindowProc(hWnd, message, wParam, lParam);
+
+	}
     return 0;
 }
 
