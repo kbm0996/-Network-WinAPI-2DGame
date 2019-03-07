@@ -13,7 +13,7 @@
   
   **figure 1. Game Screenshot*
   
-  ![capture](https://github.com/kbm0996/Network-Programming-AsyncselectModel-WINAPI_2DGame/blob/master/server&dummy.jpg)
+  ![capture](https://github.com/kbm0996/Network-Programming-AsyncselectModel-WINAPI_2DGame/blob/master/dummy&server.jpg)
   
   **figure 2. Server Log & Dummy Program*
 
