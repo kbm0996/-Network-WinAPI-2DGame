@@ -13,14 +13,14 @@
   
   **figure 1. Game Screenshot*
   
-  ![capture](https://github.com/kbm0996/Network-Programming-AsyncselectModel-WINAPI_2DGame/blob/master/serverlogfigure(feat.dummy).jpg)
+  ![capture](https://github.com/kbm0996/Network-Programming-AsyncselectModel-WINAPI_2DGame/blob/master/dummy&server.jpg)
   
-  **figure 2. Server Log Screenshot(feat.Dummy)*
+  **figure 2. Server Log(Right) & Dummy Program(Left)*
 
   
 ## 📑 구성
 ### 📂 Ver.MMO
-#### 💻 Client 💻 Dummy 💻 Server
+#### 💻 Client.sln 💻 Dummy.sln 💻 Server.sln
 ### 📂 Ver.MO
-#### 💻 Client(feat.Server.exe)
+#### 💻 Client.sln 💻 Server.exe)
 
