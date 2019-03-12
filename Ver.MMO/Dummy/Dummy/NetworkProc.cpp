@@ -27,7 +27,7 @@ DWORD	g_RTTMax;
 // Server Controll
 BOOL g_bShutdown = false;
 
-bool netStartUp()
+bool NetworkInit()
 {
 	WSADATA		wsa;
 	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
@@ -38,7 +38,7 @@ bool netStartUp()
 	return true;
 }
 
-void netCleanUp()
+void NetworkClose()
 {
 	st_SESSION* pSession;
 	for (auto iter = g_SessionMap.begin(); iter != g_SessionMap.end();)
@@ -61,7 +61,7 @@ void netCleanUp()
 	WSACleanup();
 }
 
-void NetworkProcess()
+void NetworkProc()
 {
 	int		iSockCnt = 0;
 	//-----------------------------------------------------
@@ -165,7 +165,7 @@ bool SelectSocket(SOCKET* pTableSocket, FD_SET *pReadSet, FD_SET *pWriteSet, int
 
 			if (FD_ISSET(pTableSocket[iCnt], pWriteSet))
 			{
-				if (!ProcSend(pTableSocket[iCnt]))
+				if (!SendEvent(pTableSocket[iCnt]))
 				{
 					DisconnectSession(pTableSocket[iCnt]);
 					continue;
@@ -174,7 +174,7 @@ bool SelectSocket(SOCKET* pTableSocket, FD_SET *pReadSet, FD_SET *pWriteSet, int
 
 			if (FD_ISSET(pTableSocket[iCnt], pReadSet))
 			{
-				if (!ProcRecv(pTableSocket[iCnt]))
+				if (!RecvEvent(pTableSocket[iCnt]))
 				{
 					DisconnectSession(pTableSocket[iCnt]);
 					continue;
@@ -186,7 +186,7 @@ bool SelectSocket(SOCKET* pTableSocket, FD_SET *pReadSet, FD_SET *pWriteSet, int
 	return true;
 }
 
-bool ProcRecv(SOCKET Sock)
+bool RecvEvent(SOCKET Sock)
 {
 	st_SESSION *pSession = FindSession(Sock);
 	if (pSession == nullptr)
@@ -195,21 +195,22 @@ bool ProcRecv(SOCKET Sock)
 		return false;
 	}
 
-	// 마지막으로 받은 메시지 시간
-	pSession->dwLastRecvTick = timeGetTime();
-
-	// 만약 RecvQ에 Put할 사이즈가 없다면 자동적으로 종료처리로 들어가 끊어버린다.
-	// 큐가 가득찬것. 이 뜻은 처리를 못하고있다는 것.
-	if (pSession->RecvQ.GetFreeSize() == 0)
+	WSABUF wsabuf[2];
+	DWORD dwTransferred = 0;
+	DWORD dwFlag = 0;
+	int iBufCnt = 1;
+	wsabuf[0].buf = pSession->RecvQ.GetWriteBufferPtr();
+	wsabuf[0].len = pSession->RecvQ.GetUnbrokenEnqueueSize();
+	if (wsabuf[0].len < pSession->RecvQ.GetFreeSize())
 	{
-		LOG(L"SYSTEM", LOG_ERROR, L"FULL RecvQ # SessionID: %ld", pSession->dwSessionID);
-		return true;
+		wsabuf[1].buf = pSession->RecvQ.GetBufferPtr();
+		wsabuf[1].len = pSession->RecvQ.GetFreeSize() - wsabuf[0].len;
+		++iBufCnt;
 	}
 
-	int iResult = recv(pSession->Sock, pSession->RecvQ.GetWriteBufferPtr(), pSession->RecvQ.GetUnbrokenEnqueueSize(), 0);
+	int iResult = WSARecv(pSession->Sock, wsabuf, iBufCnt, &dwTransferred, &dwFlag, NULL, NULL);
 	if (iResult == SOCKET_ERROR)
 	{
-		// 받다가 에러 발생시 종료
 		int err = WSAGetLastError();
 		if (err != 10054)
 		{
@@ -217,19 +218,9 @@ bool ProcRecv(SOCKET Sock)
 		}
 		return false;
 	}
-	else if (iResult == 0)
-	{
-		// 클라이언트 측에서 종료
-		LOG(L"SYSTEM", LOG_DEBUG, L"recv() bytes 0 # SessionID: %d", pSession->dwSessionID);
-		return false;
-	}
 
-	if (pSession->RecvQ.MoveWritePos(iResult) != iResult)
-	{
-		LOG(L"SYSTEM", LOG_ERROR, L"recv() RecvQ Enqueue Failed # SessionID: %d", pSession->dwSessionID);
-		return false;
-	}
-
+	pSession->RecvQ.MoveWritePos(dwTransferred);
+	pSession->dwLastRecvTick = timeGetTime();
 	g_RecvBytes += iResult;
 
 	//-----------------------------------------------------
@@ -238,14 +229,14 @@ bool ProcRecv(SOCKET Sock)
 	//-----------------------------------------------------
 	while (1)
 	{
-		if (!CompleteRecvPacket(pSession))
+		if (!RecvComplete(pSession))
 			break;
 	}
 
 	return true;
 }
 
-bool ProcSend(SOCKET Sock)
+bool SendEvent(SOCKET Sock)
 {
 	st_SESSION * pSession = FindSession(Sock);
 	if (pSession == NULL)
@@ -356,42 +347,42 @@ bool DisconnectSession(SOCKET sock)
 	return true;
 }
 
-bool PacketProc(st_SESSION * session, WORD wType, mylib::CSerialBuffer * Packet)
+bool OnRecv(st_SESSION * session, WORD wType, mylib::CSerialBuffer * Packet)
 {
 	switch (wType)
 	{
 	case dfPACKET_SC_CREATE_MY_CHARACTER:
-		PacketProc_CreateMyCharacter(session, Packet);
+		OnRecv_CreateMyCharacter(session, Packet);
 		break;
 	case dfPACKET_SC_CREATE_OTHER_CHARACTER:
-		PacketProc_CreateOtherCharacter(session, Packet);
+		OnRecv_CreateOtherCharacter(session, Packet);
 		break;
 	case dfPACKET_SC_DELETE_CHARACTER:
-		PacketProc_DeleteCharacter(session, Packet);
+		OnRecv_DeleteCharacter(session, Packet);
 		break;
 	case dfPACKET_SC_MOVE_START:
-		PacketProc_Move_Start(session, Packet);
+		OnRecv_Move_Start(session, Packet);
 		break;
 	case dfPACKET_SC_MOVE_STOP:
-		PacketProc_Move_Stop(session, Packet);
+		OnRecv_Move_Stop(session, Packet);
 		break;
 	case dfPACKET_SC_ATTACK1:
-		PacketProc_Attack1(session, Packet);
+		OnRecv_Attack1(session, Packet);
 		break;
 	case dfPACKET_SC_ATTACK2:
-		PacketProc_Attack2(session, Packet);
+		OnRecv_Attack2(session, Packet);
 		break;
 	case dfPACKET_SC_ATTACK3:
-		PacketProc_Attack3(session, Packet);
+		OnRecv_Attack3(session, Packet);
 		break;
 	case dfPACKET_SC_DAMAGE:
-		PacketProc_Damage(session, Packet);
+		OnRecv_Damage(session, Packet);
 		break;
 	case dfPACKET_SC_SYNC:
-		PacketProc_Sync(session, Packet);
+		OnRecv_Sync(session, Packet);
 		break;
 	case dfPACKET_SC_ECHO:
-		PacketProc_Echo(session, Packet);
+		OnRecv_Echo(session, Packet);
 		break;
 	default:
 		LOG(L"SYSTEM", LOG_ERROR, L"Unknown Packet SessionID: %d, PacketType: %d", session->dwSessionID, wType);
@@ -404,7 +395,7 @@ bool PacketProc(st_SESSION * session, WORD wType, mylib::CSerialBuffer * Packet)
 	return true;
 }
 
-bool PacketProc_CreateMyCharacter(st_SESSION * session, mylib::CSerialBuffer * pPacket)
+bool OnRecv_CreateMyCharacter(st_SESSION * session, mylib::CSerialBuffer * pPacket)
 {
 	DWORD ID;
 	BYTE Dir;
@@ -453,47 +444,47 @@ bool PacketProc_CreateMyCharacter(st_SESSION * session, mylib::CSerialBuffer * p
 	return true;
 }
 
-bool PacketProc_CreateOtherCharacter(st_SESSION * session, mylib::CSerialBuffer * pPacket)
+bool OnRecv_CreateOtherCharacter(st_SESSION * session, mylib::CSerialBuffer * pPacket)
 {
 	return false;
 }
 
-bool PacketProc_DeleteCharacter(st_SESSION * session, mylib::CSerialBuffer * pPacket)
+bool OnRecv_DeleteCharacter(st_SESSION * session, mylib::CSerialBuffer * pPacket)
 {
 	return false;
 }
 
-bool PacketProc_Move_Start(st_SESSION * session, mylib::CSerialBuffer * Packet)
+bool OnRecv_Move_Start(st_SESSION * session, mylib::CSerialBuffer * Packet)
 {
 	return false;
 }
 
-bool PacketProc_Move_Stop(st_SESSION * session, mylib::CSerialBuffer * Packet)
+bool OnRecv_Move_Stop(st_SESSION * session, mylib::CSerialBuffer * Packet)
 {
 	return false;
 }
 
-bool PacketProc_Attack1(st_SESSION * session, mylib::CSerialBuffer * Packet)
+bool OnRecv_Attack1(st_SESSION * session, mylib::CSerialBuffer * Packet)
 {
 	return false;
 }
 
-bool PacketProc_Attack2(st_SESSION * session, mylib::CSerialBuffer * Packet)
+bool OnRecv_Attack2(st_SESSION * session, mylib::CSerialBuffer * Packet)
 {
 	return false;
 }
 
-bool PacketProc_Attack3(st_SESSION * session, mylib::CSerialBuffer * Packet)
+bool OnRecv_Attack3(st_SESSION * session, mylib::CSerialBuffer * Packet)
 {
 	return false;
 }
 
-bool PacketProc_Damage(st_SESSION * session, mylib::CSerialBuffer * pPacket)
+bool OnRecv_Damage(st_SESSION * session, mylib::CSerialBuffer * pPacket)
 {
 	return false;
 }
 
-bool PacketProc_Sync(st_SESSION * session, mylib::CSerialBuffer * pPacket)
+bool OnRecv_Sync(st_SESSION * session, mylib::CSerialBuffer * pPacket)
 {
 	DWORD ID;
 	WORD X, Y;
@@ -541,7 +532,7 @@ bool PacketProc_Sync(st_SESSION * session, mylib::CSerialBuffer * pPacket)
 	return true;
 }
 
-bool PacketProc_Echo(st_SESSION * session, mylib::CSerialBuffer * Packet)
+bool OnRecv_Echo(st_SESSION * session, mylib::CSerialBuffer * Packet)
 {
 	DWORD Time;
 	//---------------------------------------------------------------
@@ -606,7 +597,7 @@ void DummyConnect()
 	return;
 }
 
-int CompleteRecvPacket(st_SESSION * pSession)
+int RecvComplete(st_SESSION * pSession)
 {
 	//-----------------------------------------------------
 	// 받은 내용 검사
@@ -672,7 +663,7 @@ int CompleteRecvPacket(st_SESSION * pSession)
 	pPacket.MoveWritePos(stPacketHeader.bySize);
 
 	// 실질적인 패킷 처리 함수 호출
-	if (!PacketProc(pSession, stPacketHeader.byType, &pPacket))
+	if (!OnRecv(pSession, stPacketHeader.byType, &pPacket))
 	{
 		return false;
 	}

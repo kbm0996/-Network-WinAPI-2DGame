@@ -14,16 +14,16 @@ void main()
 	wprintf(L"Client Number : ");
 	wscanf_s(L"%d", &g_MaxClient);
 
-	netStartUp();
+	NetworkInit();
 	Sleep(10000);
 
 	while (1)
 	{
-		NetworkProcess();
+		NetworkProc();
 		Update();
 		Sleep(1);
 	}
 
-	netCleanUp();
+	NetworkClose();
 	timeEndPeriod(1);
 }

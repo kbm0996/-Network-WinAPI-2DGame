@@ -81,7 +81,7 @@ bool NetworkProc(WPARAM wParam, LPARAM lParam)
 	return TRUE;
 }
 
-void Network_Close()
+void NetworkClose()
 {
 	closesocket(g_Socket);
 	WSACleanup();
@@ -146,55 +146,55 @@ bool RecvEvent()
 			return false;
 
 		// 9.	헤더의 타입에 따른 분기를 위해 패킷 프로시저 호출
-		PacketProc(PacketHeader.byType, Packet);
+		OnRecv(PacketHeader.byType, Packet);
 	}
 
 	return true;
 }
 
-bool PacketProc(BYTE byType, char* Packet)
+bool OnRecv(BYTE byType, char* Packet)
 {
 	switch (byType)
 	{
 	case dfPACKET_SC_CREATE_MY_CHARACTER:
-		netPacketProc_CreateMyCharacter((st_PACKET_SC_CREATE_MY_CHARACTER *)Packet);
+		OnRecv_CreateMyCharacter((st_PACKET_SC_CREATE_MY_CHARACTER *)Packet);
 		break;
 	case dfPACKET_SC_CREATE_OTHER_CHARACTER:
-		netPacketProc_CreateOtherCharacter((st_PACKET_SC_CREATE_OTHER_CHARACTER *)Packet);
+		OnRecv_CreateOtherCharacter((st_PACKET_SC_CREATE_OTHER_CHARACTER *)Packet);
 		break;
 	case dfPACKET_SC_DELETE_CHARACTER:
-		netPacketProc_DeleteCharacter((st_PACKET_SC_DELETE_CHARACTER *)Packet);
+		OnRecv_DeleteCharacter((st_PACKET_SC_DELETE_CHARACTER *)Packet);
 		break;
 	case dfPACKET_SC_MOVE_START:
-		netPacketProc_MoveStart((st_PACKET_SC_MOVE_START *)Packet);
+		OnRecv_MoveStart((st_PACKET_SC_MOVE_START *)Packet);
 		break;
 	case dfPACKET_SC_MOVE_STOP:
-		netPacketProc_MoveStop((st_PACKET_SC_MOVE_STOP *)Packet);
+		OnRecv_MoveStop((st_PACKET_SC_MOVE_STOP *)Packet);
 		break;
 	case dfPACKET_SC_ATTACK1:
-		netPacketProc_Attack1((st_PACKET_SC_ATTACK1 *)Packet);
+		OnRecv_Attack1((st_PACKET_SC_ATTACK1 *)Packet);
 		break;
 	case dfPACKET_SC_ATTACK2:
-		netPacketProc_Attack2((st_PACKET_SC_ATTACK2 *)Packet);
+		OnRecv_Attack2((st_PACKET_SC_ATTACK2 *)Packet);
 		break;
 	case dfPACKET_SC_ATTACK3:
-		netPacketProc_Attack3((st_PACKET_SC_ATTACK3 *)Packet);
+		OnRecv_Attack3((st_PACKET_SC_ATTACK3 *)Packet);
 		break;
 	case dfPACKET_SC_DAMAGE:
-		netPacketProc_Damage((st_PACKET_SC_DAMAGE *)Packet);
+		OnRecv_Damage((st_PACKET_SC_DAMAGE *)Packet);
 		break;
 	}
 	return true;
 }
 
-void netPacketProc_CreateMyCharacter(st_PACKET_SC_CREATE_MY_CHARACTER * Packet)
+void OnRecv_CreateMyCharacter(st_PACKET_SC_CREATE_MY_CHARACTER * Packet)
 {
 	g_pMyPlayer = new CPlayer(Packet->X, Packet->Y, TRUE, 0, Packet->ID, Packet->HP);
 	g_pMyPlayer->SetDirection(Packet->Direction);
 	g_lst.push_back((CBaseObject*)g_pMyPlayer);
 }
 
-void netPacketProc_CreateOtherCharacter(st_PACKET_SC_CREATE_OTHER_CHARACTER * Packet)
+void OnRecv_CreateOtherCharacter(st_PACKET_SC_CREATE_OTHER_CHARACTER * Packet)
 {
 	for (int iCnt = 0; iCnt < dfMAX_USER; iCnt++)
 	{
@@ -208,7 +208,7 @@ void netPacketProc_CreateOtherCharacter(st_PACKET_SC_CREATE_OTHER_CHARACTER * Pa
 	}
 }
 
-void netPacketProc_DeleteCharacter(st_PACKET_SC_DELETE_CHARACTER * Packet)
+void OnRecv_DeleteCharacter(st_PACKET_SC_DELETE_CHARACTER * Packet)
 {
 	for (ObjectList<CBaseObject*>::iterator Object_iter = g_lst.begin(); Object_iter != g_lst.end(); ++Object_iter)
 	{
@@ -229,7 +229,7 @@ void netPacketProc_DeleteCharacter(st_PACKET_SC_DELETE_CHARACTER * Packet)
 	}
 }
 
-void netPacketProc_MoveStart(st_PACKET_SC_MOVE_START * Packet)
+void OnRecv_MoveStart(st_PACKET_SC_MOVE_START * Packet)
 {
 	for (int iCnt = 0; iCnt < dfMAX_USER; iCnt++)
 		if (g_pPlayer[iCnt]->GetObjectID() == Packet->ID)
@@ -240,7 +240,7 @@ void netPacketProc_MoveStart(st_PACKET_SC_MOVE_START * Packet)
 		}
 }
 
-void netPacketProc_MoveStop(st_PACKET_SC_MOVE_STOP * Packet)
+void OnRecv_MoveStop(st_PACKET_SC_MOVE_STOP * Packet)
 {
 	for (int iCnt = 0; iCnt < dfMAX_USER; iCnt++)
 		if (g_pPlayer[iCnt]->GetObjectID() == Packet->ID)
@@ -252,7 +252,7 @@ void netPacketProc_MoveStop(st_PACKET_SC_MOVE_STOP * Packet)
 		}
 }
 
-void netPacketProc_Attack1(st_PACKET_SC_ATTACK1 * Packet)
+void OnRecv_Attack1(st_PACKET_SC_ATTACK1 * Packet)
 {
 	for (int iCnt = 0; iCnt < dfMAX_USER; iCnt++)
 		if (g_pPlayer[iCnt]->GetObjectID() == Packet->ID)
@@ -264,7 +264,7 @@ void netPacketProc_Attack1(st_PACKET_SC_ATTACK1 * Packet)
 		}
 }
 
-void netPacketProc_Attack2(st_PACKET_SC_ATTACK2 * Packet)
+void OnRecv_Attack2(st_PACKET_SC_ATTACK2 * Packet)
 {
 	for (int iCnt = 0; iCnt < dfMAX_USER; iCnt++)
 		if (g_pPlayer[iCnt]->GetObjectID() == Packet->ID)
@@ -276,7 +276,7 @@ void netPacketProc_Attack2(st_PACKET_SC_ATTACK2 * Packet)
 		}
 }
 
-void netPacketProc_Attack3(st_PACKET_SC_ATTACK3 * Packet)
+void OnRecv_Attack3(st_PACKET_SC_ATTACK3 * Packet)
 {
 	for (int iCnt = 0; iCnt < dfMAX_USER; iCnt++)
 		if (g_pPlayer[iCnt]->GetObjectID() == Packet->ID)
@@ -288,7 +288,7 @@ void netPacketProc_Attack3(st_PACKET_SC_ATTACK3 * Packet)
 		}
 }
 
-void netPacketProc_Damage(st_PACKET_SC_DAMAGE * Packet)
+void OnRecv_Damage(st_PACKET_SC_DAMAGE * Packet)
 {
 	ObjectList<CBaseObject*>::iterator Object_iter;
 

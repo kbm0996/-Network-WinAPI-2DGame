@@ -66,17 +66,17 @@ struct st_SECTOR_AROUND
 ///////////////////////////////////////////////////////
 // Network Process
 ///////////////////////////////////////////////////////
-bool netStartUp();
-void netCleanUp();
+bool NetworkInit();
+void NetworkClose();
 
-void NetworkProcess();
+void NetworkProc();
 bool SelectSocket(SOCKET* pTableSocket, FD_SET *pReadSet, FD_SET *pWriteSet, int iSockCnt);
 
 
-bool ProcRecv(SOCKET Sock);
-int CompleteRecvPacket(st_SESSION * pSession);
+bool RecvEvent(SOCKET Sock);
+int RecvComplete(st_SESSION * pSession);
 
-bool ProcSend(SOCKET Sock);
+bool SendEvent(SOCKET Sock);
 void SendPacket_Unicast(st_SESSION * pSession, mylib::CSerialBuffer * pPacket);
 
 ///////////////////////////////////////////////////////
@@ -86,18 +86,18 @@ st_SESSION *	FindSession(SOCKET sock);
 st_SESSION *	CreateSession(SOCKET Socket);
 bool			DisconnectSession(SOCKET sock);
 
-bool PacketProc(st_SESSION * session, WORD wType, mylib::CSerialBuffer* Packet);
-bool PacketProc_CreateMyCharacter(st_SESSION * session, mylib::CSerialBuffer *pPacket);
-bool PacketProc_CreateOtherCharacter(st_SESSION * session, mylib::CSerialBuffer * pPacket);
-bool PacketProc_DeleteCharacter(st_SESSION * session, mylib::CSerialBuffer * pPacket);
-bool PacketProc_Move_Start(st_SESSION *session, mylib::CSerialBuffer* Packet);
-bool PacketProc_Move_Stop(st_SESSION *session, mylib::CSerialBuffer* Packet);
-bool PacketProc_Attack1(st_SESSION *session, mylib::CSerialBuffer* Packet);
-bool PacketProc_Attack2(st_SESSION *session, mylib::CSerialBuffer* Packet);
-bool PacketProc_Attack3(st_SESSION *session, mylib::CSerialBuffer* Packet);
-bool PacketProc_Damage(st_SESSION * session, mylib::CSerialBuffer * pPacket);
-bool PacketProc_Sync(st_SESSION * session, mylib::CSerialBuffer *pPacket);
-bool PacketProc_Echo(st_SESSION *session, mylib::CSerialBuffer* Packet);
+bool OnRecv(st_SESSION * session, WORD wType, mylib::CSerialBuffer* Packet);
+bool OnRecv_CreateMyCharacter(st_SESSION * session, mylib::CSerialBuffer *pPacket);
+bool OnRecv_CreateOtherCharacter(st_SESSION * session, mylib::CSerialBuffer * pPacket);
+bool OnRecv_DeleteCharacter(st_SESSION * session, mylib::CSerialBuffer * pPacket);
+bool OnRecv_Move_Start(st_SESSION *session, mylib::CSerialBuffer* Packet);
+bool OnRecv_Move_Stop(st_SESSION *session, mylib::CSerialBuffer* Packet);
+bool OnRecv_Attack1(st_SESSION *session, mylib::CSerialBuffer* Packet);
+bool OnRecv_Attack2(st_SESSION *session, mylib::CSerialBuffer* Packet);
+bool OnRecv_Attack3(st_SESSION *session, mylib::CSerialBuffer* Packet);
+bool OnRecv_Damage(st_SESSION * session, mylib::CSerialBuffer * pPacket);
+bool OnRecv_Sync(st_SESSION * session, mylib::CSerialBuffer *pPacket);
+bool OnRecv_Echo(st_SESSION *session, mylib::CSerialBuffer* Packet);
 
 void DummyConnect();
 

@@ -86,7 +86,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		}
 	}
 
-	Network_Close();
+	NetworkClose();
 	timeEndPeriod(1);
     return (int) msg.wParam;
 }

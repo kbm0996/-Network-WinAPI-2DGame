@@ -598,7 +598,7 @@ void CharacterSectorUpdatePacket(st_CHARACTER * pCharacter)
 	{
 		pSectorList = &g_Sector[RemoveSector.Around[iCnt].iY][RemoveSector.Around[iCnt].iX];
 
-		for (ListIter = pSectorList->begin(); ListIter != pSectorList->end(); List++iter)
+		for (ListIter = pSectorList->begin(); ListIter != pSectorList->end(); ++ListIter)
 		{
 			mpDeleteCharacter(&Packet, (*ListIter)->dwSessionID);
 
@@ -623,7 +623,7 @@ void CharacterSectorUpdatePacket(st_CHARACTER * pCharacter)
 	for (iCnt = 0; iCnt < AddSector.iCount; ++iCnt)
 	{
 		pSectorList = &g_Sector[AddSector.Around[iCnt].iY][AddSector.Around[iCnt].iX];
-		for (ListIter = pSectorList->begin(); ListIter != pSectorList->end(); List++iter)
+		for (ListIter = pSectorList->begin(); ListIter != pSectorList->end(); ++ListIter)
 		{
 			pExistCharacter = *ListIter;
 			// 이동한 캐릭터의 세션은 전송 대상이 아님

@@ -66,17 +66,17 @@ struct st_SECTOR_AROUND
 ///////////////////////////////////////////////////////
 // Network Process
 ///////////////////////////////////////////////////////
-bool netStartUp();
-void netCleanUp();
+bool NetworkInit();
+void NetworkClose();
 
-void NetworkProcess();
+void NetworkProc();
 bool SelectSocket(SOCKET* pTableSocket, FD_SET *pReadSet, FD_SET *pWriteSet, int iSockCnt);
 
-bool ProcAccept();
-bool ProcRecv(SOCKET Sock);
-int CompleteRecvPacket(st_SESSION * pSession);
+bool AcceptProc();
+bool RecvEvent(SOCKET Sock);
+int RecvComplete(st_SESSION * pSession);
 
-bool ProcSend(SOCKET Sock);
+bool SendEvent(SOCKET Sock);
 void SendPacket_Unicast(st_SESSION * pSession, mylib::CSerialBuffer * pPacket);
 void SendPacket_SectorOne(int iSectorX, int iSectorY, mylib::CSerialBuffer * pPacket, st_SESSION *pExceptSession = NULL);
 void SendPacket_Around(st_SESSION * pSession, mylib::CSerialBuffer * pPacket, bool bSendMe = false);
@@ -88,13 +88,13 @@ st_SESSION *	FindSession(SOCKET sock);
 st_SESSION *	CreateSession(SOCKET Socket);
 bool			DisconnectSession(SOCKET sock);
 
-bool PacketProc(st_SESSION * session, WORD wType, mylib::CSerialBuffer* Packet);
-bool PacketProc_Move_Start(st_SESSION *session, mylib::CSerialBuffer* Packet);
-bool PacketProc_Move_Stop(st_SESSION *session, mylib::CSerialBuffer* Packet);
-bool PacketProc_Attack1(st_SESSION *session, mylib::CSerialBuffer* Packet);
-bool PacketProc_Attack2(st_SESSION *session, mylib::CSerialBuffer* Packet);
-bool PacketProc_Attack3(st_SESSION *session, mylib::CSerialBuffer* Packet);
-bool PacketProc_Echo(st_SESSION *session, mylib::CSerialBuffer* Packet);
+bool OnRecv(st_SESSION * session, WORD wType, mylib::CSerialBuffer* Packet);
+bool OnRecv_Move_Start(st_SESSION *session, mylib::CSerialBuffer* Packet);
+bool OnRecv_Move_Stop(st_SESSION *session, mylib::CSerialBuffer* Packet);
+bool OnRecv_Attack1(st_SESSION *session, mylib::CSerialBuffer* Packet);
+bool OnRecv_Attack2(st_SESSION *session, mylib::CSerialBuffer* Packet);
+bool OnRecv_Attack3(st_SESSION *session, mylib::CSerialBuffer* Packet);
+bool OnRecv_Echo(st_SESSION *session, mylib::CSerialBuffer* Packet);
 
 ///////////////////////////////////////////////////////
 // Packet

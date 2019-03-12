@@ -82,7 +82,7 @@ bool NetworkProc(WPARAM wParam, LPARAM lParam)
 	return TRUE;
 }
 
-void Network_Close()
+void NetworkClose()
 {
 	g_bConnect = FALSE;
 	g_bSendFlag = FALSE;
@@ -96,14 +96,14 @@ bool SendEvent()
 	char SendBuff[CRingBuffer::en_BUFFER_DEFALUT];
 
 	if (!g_bSendFlag)	// Send 가능여부 확인 / 이는 FD_WRITE 발생여부임 -> AsyncSelect에서는 connect 반응이 FD_WRITE로 옴
-		return FALSE;
+		return false;
 
 	// g_SendQ에 있는 데이터들을 최대 dfNETWORK_WSABUFF_SIZE 크기로 보낸다
 	int iSendSize = g_SendQ.GetUseSize();
 	iSendSize = min(CRingBuffer::en_BUFFER_DEFALUT, iSendSize);
 	// g_SendQ 에 보낼 데이터가 있는지 확인
 	if (iSendSize <= 0)
-		return TRUE;
+		return true;
 
 	g_bSendFlag = TRUE;
 
@@ -118,7 +118,6 @@ bool SendEvent()
 		// Peek으로 데이터 뽑음. 전송이 제대로 마무리됐을 경우 삭제
 		g_SendQ.Peek(SendBuff, iSendSize);
 
-		// Send
 		int iResult = send(g_Socket, SendBuff, iSendSize, 0);
 		if (iResult == SOCKET_ERROR)
 		{
@@ -153,14 +152,14 @@ bool SendEvent()
 	return true;
 }
 
-bool SendPacket(st_NETWORK_PACKET_HEADER  *pHeader, CSerialBuffer *pPacket)
+void SendPacket(st_NETWORK_PACKET_HEADER  *pHeader, CSerialBuffer *pPacket)
 {
 	// 접속상태 예외처리
-	g_bSendFlag = true;
+	//g_bSendFlag = true;
 	g_SendQ.Enqueue((char*)pHeader, sizeof(st_NETWORK_PACKET_HEADER));
 	g_SendQ.Enqueue((char*)pPacket->GetBufferPtr(), pPacket->GetUseSize());
 	SendEvent();
-	return true;
+	//return true;
 }
 
 //  서버로 데이터 Send 시에는 항상 g_SendQ 에 먼저 데이터를 넣고, 
@@ -404,37 +403,37 @@ bool OnRecv(BYTE byType, CSerialBuffer* pPacket)
 	switch (byType)
 	{
 	case dfPACKET_SC_CREATE_MY_CHARACTER:
-		netPacketProc_CreateMyCharacter(pPacket);
+		OnRecv_CreateMyCharacter(pPacket);
 		break;
 	case dfPACKET_SC_CREATE_OTHER_CHARACTER:
-		netPacketProc_CreateOtherCharacter(pPacket);
+		OnRecv_CreateOtherCharacter(pPacket);
 		break;
 	case dfPACKET_SC_DELETE_CHARACTER:
-		netPacketProc_DeleteCharacter(pPacket);
+		OnRecv_DeleteCharacter(pPacket);
 		break;
 	case dfPACKET_SC_MOVE_START:
-		netPacketProc_MoveStart(pPacket);
+		OnRecv_MoveStart(pPacket);
 		break;
 	case dfPACKET_SC_MOVE_STOP:
-		netPacketProc_MoveStop(pPacket);
+		OnRecv_MoveStop(pPacket);
 		break;
 	case dfPACKET_SC_ATTACK1:
-		netPacketProc_Attack1(pPacket);
+		OnRecv_Attack1(pPacket);
 		break;
 	case dfPACKET_SC_ATTACK2:
-		netPacketProc_Attack2(pPacket);
+		OnRecv_Attack2(pPacket);
 		break;
 	case dfPACKET_SC_ATTACK3:
-		netPacketProc_Attack3(pPacket);
+		OnRecv_Attack3(pPacket);
 		break;
 	case dfPACKET_SC_DAMAGE:
-		netPacketProc_Damage(pPacket);
+		OnRecv_Damage(pPacket);
 		break;
 	}
 	return true;
 }
 
-void netPacketProc_CreateMyCharacter(CSerialBuffer * pPacket)
+void OnRecv_CreateMyCharacter(CSerialBuffer * pPacket)
 {
 	DWORD ID;
 	BYTE Dir;
@@ -465,7 +464,7 @@ void netPacketProc_CreateMyCharacter(CSerialBuffer * pPacket)
 	g_lst.push_back((CBaseObject*)g_pMyPlayer);
 }
 
-void netPacketProc_CreateOtherCharacter(CSerialBuffer * pPacket)
+void OnRecv_CreateOtherCharacter(CSerialBuffer * pPacket)
 {
 	CPlayer* newPlayer;
 	DWORD ID;
@@ -497,7 +496,7 @@ void netPacketProc_CreateOtherCharacter(CSerialBuffer * pPacket)
 	g_lst.push_back((CBaseObject*)newPlayer);
 }
 
-void netPacketProc_DeleteCharacter(CSerialBuffer * pPacket)
+void OnRecv_DeleteCharacter(CSerialBuffer * pPacket)
 {
 	DWORD ID;
 	//---------------------------------------------------------------
@@ -529,7 +528,7 @@ void netPacketProc_DeleteCharacter(CSerialBuffer * pPacket)
 	}
 }
 
-void netPacketProc_MoveStart(CSerialBuffer * pPacket)
+void OnRecv_MoveStart(CSerialBuffer * pPacket)
 {
 	DWORD ID;
 	BYTE Dir;
@@ -572,7 +571,7 @@ void netPacketProc_MoveStart(CSerialBuffer * pPacket)
 	}
 }
 
-void netPacketProc_MoveStop(CSerialBuffer * pPacket)
+void OnRecv_MoveStop(CSerialBuffer * pPacket)
 {
 	DWORD ID;
 	BYTE Dir;
@@ -612,7 +611,7 @@ void netPacketProc_MoveStop(CSerialBuffer * pPacket)
 	}
 }
 
-void netPacketProc_Attack1(CSerialBuffer * pPacket)
+void OnRecv_Attack1(CSerialBuffer * pPacket)
 {
 	DWORD ID;
 	BYTE Dir;
@@ -652,7 +651,7 @@ void netPacketProc_Attack1(CSerialBuffer * pPacket)
 	}
 }
 
-void netPacketProc_Attack2(CSerialBuffer * pPacket)
+void OnRecv_Attack2(CSerialBuffer * pPacket)
 {
 	DWORD ID;
 	BYTE Dir;
@@ -692,7 +691,7 @@ void netPacketProc_Attack2(CSerialBuffer * pPacket)
 	}
 }
 
-void netPacketProc_Attack3(CSerialBuffer * pPacket)
+void OnRecv_Attack3(CSerialBuffer * pPacket)
 {
 	DWORD ID;
 	BYTE Dir;
@@ -732,7 +731,7 @@ void netPacketProc_Attack3(CSerialBuffer * pPacket)
 	}
 }
 
-void netPacketProc_Damage(CSerialBuffer * pPacket)
+void OnRecv_Damage(CSerialBuffer * pPacket)
 {
 	DWORD ID1, ID2;
 	BYTE ID2_HP;
@@ -784,7 +783,7 @@ void netPacketProc_Damage(CSerialBuffer * pPacket)
 	}
 }
 
-void netPacketProc_Sync(CSerialBuffer * pPacket)
+void OnRecv_Sync(CSerialBuffer * pPacket)
 {
 	DWORD ID;
 	WORD X, Y;
