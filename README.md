@@ -1,4 +1,4 @@
-# 초간단 MMO 2D 격투 게임 
+# 간단한 MMO 2D 격투 게임 
 ## 📢 개요
   Select모델(클라이언트)과 AsyncSelect모델(서버, 더미)을 이용한 MMO(Massively Multiplayer Online) 2D 게임.
   
