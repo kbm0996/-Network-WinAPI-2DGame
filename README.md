@@ -22,5 +22,5 @@
 ### 📂 Ver.MMO
 #### 💻 Client.sln 💻 Dummy.sln 💻 Server.sln
 ### 📂 Ver.MO
-#### 💻 Client.sln 💻 Server.exe)
+#### 💻 Client.sln 💻 Server.exe
 
